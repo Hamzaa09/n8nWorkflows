@@ -1,0 +1,729 @@
+{
+  "name": "Youtube Shorts Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Prompt For Video",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Prompt"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        304
+      ],
+      "id": "c7a3c754-da20-4722-8a9a-a0c737ed789f",
+      "name": "Prompt For Video",
+      "webhookId": "4c25b563-e9eb-403a-ad48-65bc27be6a6f"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a helpful assistant that converts incomplete or vague user prompts into detailed, structured prompts for a video creation AI. The user will provide a basic prompt for the video, and your task is to expand and clarify it to include specific instructions for a video AI to create a high-quality short video. Your output should be clear, specific, and include key information like the video theme, tone, style, length, and any required elements (e.g., animations, voiceovers, background music).\n\nSteps:\n\nIdentify the theme: What is the video about? For example: \"space exploration\", \"comedy skit\", \"fitness tutorial\", \"nature documentary\", \"how-to guide\", etc.\n\nSpecify tone/style: What is the desired tone or style of the video? For example: \"funny\", \"educational\", \"inspirational\", \"mysterious\", \"exciting\", \"calm\", etc.\n\nLength: Specify the video length, or assume a standard length for a YouTube short (e.g., 60 seconds). If the user does not specify, assume the video should be concise and engaging within that timeframe.\n\nAdditional requirements: Include any specific elements the user wants, such as:\n\nAnimations\n\nVoiceovers (e.g., explain key concepts, narrate a story)\n\nBackground music (e.g., calm, suspenseful, upbeat)\n\nCaptions or subtitles for accessibility\n\nSpecial effects (e.g., transitions, text overlays, filters)\n\nExample:\n\nInput: \"space video\"\n\nOutput: \"Create a 60-second YouTube short about space exploration. Include animations of planets and stars, a voiceover explaining key concepts about the solar system, and calming background music. Add captions for accessibility.\"\n\nInput: \"funny video on cats\"\n\nOutput: \"Create a 60-second YouTube short about funny cat moments. The video should have humorous, playful visuals, background music that’s upbeat, and captions for key moments.\n\nBelow is the prompt:\n {{ $json.Prompt }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        224,
+        304
+      ],
+      "id": "f49c1017-f0ce-4fbd-befe-38b21cc44024",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        528
+      ],
+      "id": "a1b54c5e-f583-4aee-8fa0-d3a381f25e45",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "vdtXwicz7qVSiNlV",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Act as a YouTube Viral Growth Expert. \n\nI am providing a visual description of a video. Create ONE high-CTR (Click-Through Rate) YouTube title that is under 65 characters. \n\nRequirements:\n- Include 1 or 2 relevant emojis at the end of the title.\n- Do NOT use quotes.\n- Do NOT provide explanations or multiple options.\n- Focus on the \"wow factor\" of the visuals.\n- Use title case.\n\nInput Description:\n{{ $('Basic LLM Chain').item.json.text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1472,
+        -96
+      ],
+      "id": "e795522f-c4ca-491a-bffa-765aeafd2d61",
+      "name": "Title Generator"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1gaxZ4LgNM_-6SvjQagEkJeulE0iChwQFio55mXMccDk",
+          "mode": "list",
+          "cachedResultName": "Youtube Videos Upload Record",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gaxZ4LgNM_-6SvjQagEkJeulE0iChwQFio55mXMccDk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gaxZ4LgNM_-6SvjQagEkJeulE0iChwQFio55mXMccDk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Link": "=https://www.youtube.com/watch?v={{ $json.uploadId }}",
+            "Title ": "={{ $('Title Generator').item.json.text }}",
+            "Date": "={{ $now.format('yyyy-MM-dd') }}",
+            "Channel": "=Muhammad Hamza"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title ",
+              "displayName": "Title ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Channel",
+              "displayName": "Channel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2272,
+        16
+      ],
+      "id": "53de3b54-4e27-4c46-a230-aa1950332489",
+      "name": "Saving the Video Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3ojMBRYs0cEpdkzY",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "hamza036513@gmail.com",
+        "subject": "Video Uploaded On Your Channel",
+        "message": "=Hi Muhammad Hamza, \n\nGreat news! Your video has been successfully uploaded to YouTube.  \n\n📹 Video Details: \n- Title: {{ $json['Title '] }}\n- Upload Date: {{ $json.Date }}\n- Category: Film & Animation \n- Region: Pakistan  \n\n🔗 Watch your video here: {{ $json.Link }}\n\nYour video is now live and ready to be shared with your audience. Feel free to share the link on your social media channels or embed it on your website.  \n\nIf you need any changes or have questions about your video, please don't hesitate to reach out.  \n\nBest regards, \nHamza.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2496,
+        -96
+      ],
+      "id": "112f91ce-d7a4-4a8d-bba5-cac34e4bb0d6",
+      "name": "Inform Via Email",
+      "webhookId": "f853d30f-3229-4a82-8f30-222f636440dd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jj70JA0eOSX2Sa59",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "978423535346563",
+        "recipientPhoneNumber": "+923485379552",
+        "textBody": "=🎉 Great news!\n\nYour video is now live on YouTube! 🎥\n\n📝 *{{ $json['Title '] }}*\n\n🔗 Watch here: {{ $json.Link }}\n\nUploaded: {{ $json.Date }}\n\nShare it with your audience! 🚀",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        2496,
+        112
+      ],
+      "id": "bd27c587-7e54-47d0-9c21-1abb675edfd4",
+      "name": "Inform Via Whatsapp",
+      "webhookId": "ffd26e61-791c-4638-bb50-1cdb592320e2",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "HwEWu4hbre3fzEqK",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $json.text }}",
+        "regionCode": "PK",
+        "categoryId": "1",
+        "binaryProperty": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        16
+      ],
+      "id": "f7c030b2-0000-47f3-a1ed-602896eaa68a",
+      "name": "Upload Video on Channel",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "mDwtznmQLwbhNMux",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.heygen.com/v1/video_agent/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "sk_V2_hgu_kkFh3Nj2gjb_4FHcZBjSWKcfwklKbq0VZXHD8krG6w2L"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $('Prompt For Video').item.json.Prompt }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        576,
+        304
+      ],
+      "id": "6e3ae4fc-69a8-4567-a2af-8c518bedfeaa",
+      "name": "Generating Video"
+    },
+    {
+      "parameters": {
+        "url": "https://api.heygen.com/v1/video_status.get",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "video_id",
+              "value": "={{ $json.data.video_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "sk_V2_hgu_kkFh3Nj2gjb_4FHcZBjSWKcfwklKbq0VZXHD8krG6w2L"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1024,
+        240
+      ],
+      "id": "b5f51fa1-8f5e-47bb-9f21-399b80a69a14",
+      "name": "Getting Video"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.data.status }}",
+                    "rightValue": "completed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "327e1950-8b38-4874-97cc-0ac355f31861"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "01339c5d-d7ad-45be-b677-587f628fc154",
+                    "leftValue": "={{ $json.data.status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        288
+      ],
+      "id": "f1ab53f6-d614-4106-b023-d30b42c76e20",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Switch').item.json.data.video_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1824,
+        16
+      ],
+      "id": "c4b6b9a5-5499-4161-a5e6-6d5be805927b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        128
+      ],
+      "id": "4c60143a-3707-4970-9d54-58880afacaf8",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "vdtXwicz7qVSiNlV",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 🎬 First Block: Video Generation Flow\n\n## 1. **Input Form:** \n ### User provides a basic prompt describing the desired video.\n\n## 2. **Char Model (Prompt Refiner):**\n ### This AI model enhances and restructures the basic prompt into a clear, detailed, and HeyGen-optimized prompt.\n\n## 3. **HTTP Node (HeyGen API):** \n###  The refined prompt is sent to the HeyGen API, which generates the final AI video.\n",
+        "height": 880,
+        "width": 752
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "c149769f-116f-4a80-8e0d-8d2989ad5625",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# 🎬 Second Block: Video Retrieval Flow\n\n## 1. **Wait Node:** \n ### Pauses the workflow for 200 seconds to allow the video generation to complete.\n\n## 2. **HTTP Node:**\n ### Fetches the generated video from HeyGen using the video ID.\n\n## 3. **Switch Node:** \n### - If the video is ready → continue the workflow.\n### - If the video generation failed → stop the workflow & informs the user.\n###  - If the video is still processing → wait another 200 seconds and retry.",
+        "height": 768,
+        "width": 640,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        752,
+        -288
+      ],
+      "typeVersion": 1,
+      "id": "ef55ee89-d540-4c23-b7f9-60fc32d2c91f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# 🎬 Third Block: Title Generation\n\n### Generates a clear and catchy title using the previously refined prompt.",
+        "height": 640,
+        "width": 336,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1424,
+        -368
+      ],
+      "typeVersion": 1,
+      "id": "cf2e91ad-b8be-4f28-b55a-3439efd23b01",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# 🎬 Fourth Block: Video Upload Flow\n\n## 1. **HTTP Node:** \n ### Converts the generated video into binary format, as YouTube requires binary files for uploads. file\n## 2. **YouTube Node:**\n ### Uploads the video to the specified YouTube channel.",
+        "height": 640,
+        "width": 400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1792,
+        -480
+      ],
+      "typeVersion": 1,
+      "id": "4251689d-1d2a-4dfe-8652-1e1f785f5dfd",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# 🎬 Fifth Block: Notifications & Storage\n\n## 1. **Google Sheets Node:** \n ### Stores video metadata and relevant workflow information for record-keeping.\n\n## 2. **WhatsApp Node:**\n ### Sends an automated message notifying that the video has been successfully uploaded.\n\n## 3. **Email Node:** \n###  Sends an email notification about the video upload to specified recipients.\n",
+        "height": 864,
+        "width": 448,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2208,
+        -608
+      ],
+      "typeVersion": 1,
+      "id": "d7248dff-5100-4c0d-bb3d-6557ed34dac6",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "sendTo": "hamza036513@gmail.com",
+        "subject": "Video Upload Process Update",
+        "message": "=Your Video failed to upload. Below is the the reason:\n{{ $json.data.error.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        304
+      ],
+      "id": "4e8f858b-3317-4764-8adb-a44072fb5c6e",
+      "name": "Send a message",
+      "webhookId": "d75b3b95-5147-41cd-b507-22d7e05d8257",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jj70JA0eOSX2Sa59",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "978423535346563",
+        "recipientPhoneNumber": "+923485379552",
+        "textBody": "=Bad news!  Your video failed to upload because of: \n{{ $json.data.error.message }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1536,
+        496
+      ],
+      "id": "86916519-867e-4ce7-a646-550f64fc00d9",
+      "name": "Send message",
+      "webhookId": "209212a2-2b72-4a2b-9af4-e0f02356af90",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "HwEWu4hbre3fzEqK",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 400
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        304
+      ],
+      "id": "2ae06586-c2ce-4dc8-9343-1ad905b654dc",
+      "name": "Wait for 200 Secs",
+      "webhookId": "76d5ff7c-396c-4e6f-a5d7-c6e27debff27"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt For Video": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Generating Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Title Generator": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saving the Video Data": {
+      "main": [
+        [
+          {
+            "node": "Inform Via Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Inform Via Whatsapp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Video on Channel": {
+      "main": [
+        [
+          {
+            "node": "Saving the Video Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generating Video": {
+      "main": [
+        [
+          {
+            "node": "Wait for 200 Secs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Getting Video": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Title Generator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for 200 Secs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Upload Video on Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Title Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for 200 Secs": {
+      "main": [
+        [
+          {
+            "node": "Getting Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "c14a9fb6-386e-41a2-b44d-763d161785cc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bf46c28a3ba79a652aeafc34a9c76220443d629759fd4d3255e1d01a2a0a9977"
+  },
+  "id": "-Tdc4vxonCAzLyBBL22qS",
+  "tags": []
+}
