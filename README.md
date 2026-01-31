@@ -4,6 +4,7 @@ This n8n workflow automatically generates AI videos, uploads them to YouTube, st
 
 It is designed to demonstrate how AI & automation can remove repetitive content publishing tasks.
 
+Demonstration Video: https://www.linkedin.com/feed/update/urn:li:activity:7423207127411884032/
 
 
 # 🚀 Features
